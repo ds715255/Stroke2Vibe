@@ -1,5 +1,7 @@
 ## Compilation
-Compiling Requires Visual Studio 2019 or newer and vcpkg
+Compiling Requires Visual Studio 2019 or newer and vcpkg, or a modern Linux
+
+## Windows
 
 install antlr4 with [vcpkg](https://github.com/microsoft/vcpkg):
 ```
@@ -14,6 +16,11 @@ c:\vcpkg\vcpkg.exe integrate install
 ```
 
 Compile with Visual Studio as usual.
+
+## Linux
+
+* Install dependencies. On most Ubuntu type distro: `apt install build-essential libantlr4-runtime-dev`
+* Run `make` in project dir
 
 ## Description
 

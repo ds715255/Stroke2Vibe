@@ -2,14 +2,47 @@
 #include <memory>
 #include <iostream>
 #include <map>
+#ifdef _WIN32
 #include <conio.h>
-#include <stdlib.h >
+#else
+#include <termios.h>
+#include <unistd.h>
+#endif
+#include <stdlib.h>
 #include <antlr4-runtime.h>
 #include "JSON5Parser.h"
 #include "JSON5Lexer.h"
 
 #include "MyListener.hpp"
 #include "transform.hpp"
+
+namespace {
+char readKey() {
+#ifdef _WIN32
+    return getch();
+#else
+    termios oldSettings{};
+    if (tcgetattr(STDIN_FILENO, &oldSettings) != 0) {
+        return static_cast<char>(std::cin.get());
+    }
+
+    termios settings = oldSettings;
+    settings.c_lflag &= static_cast<tcflag_t>(~(ICANON | ECHO));
+    tcsetattr(STDIN_FILENO, TCSANOW, &settings);
+    const int key = std::cin.get();
+    tcsetattr(STDIN_FILENO, TCSANOW, &oldSettings);
+    return static_cast<char>(key);
+#endif
+}
+
+void clearConsole() {
+#ifdef _WIN32
+    system("CLS");
+#else
+    std::cout << "\033[2J\033[H";
+#endif
+}
+} // namespace
 
 void Print_Commands() {
     std::cout << std::endl << "========File commands========" << std::endl;
@@ -65,13 +98,13 @@ int main(int argc, const char* argv[]) {
         std::string log = "Conversion";
         while (true) {
             std::cout << "Enter a command:";
-            char c = getch();
+            char c = readKey();
             std::cout << c << std::endl;
 
             switch (c) {
                 ////////FILE COMMANDS///////
             case '1': {
-                system("CLS");
+                clearConsole();
                 Print_Commands();
                 break;
             }
